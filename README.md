@@ -4,8 +4,6 @@
 * Instituto Tecnológico de Costa Rica (ITCR)
 * Ingeniería Mecatrónica — I Semestre 2026
 
----
-
 ## 👥 Integrantes
 
 * Sebastián Emilio Campos Ramírez
@@ -13,9 +11,6 @@
 * José Eduardo Beita Elizondo
 * Javier Araya
 * Aarón Valerín Páez
-
----
-
 
 ## Descripción del Proyecto
 
@@ -25,7 +20,6 @@ El sistema está inspirado en percheros rotatorios donde el usuario **no necesit
 
 sdkfjsdkfjsdlfjsldfkj le podemos agregar detalles luego
 
----
 ## 🏫 Información del Curso
 
 * Curso: MT-7003 Microprocesadores y Microcontroladores
