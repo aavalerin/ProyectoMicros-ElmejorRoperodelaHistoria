@@ -1,8 +1,8 @@
 # 👕 Sistema de Percheros Circulares Inteligentes
 
-**Proyecto Final — MT7003 Microcontroladores y Microprocesadores**
-Instituto Tecnológico de Costa Rica (ITCR)
-Ingeniería Mecatrónica — I Semestre 2026
+* **Proyecto Final — MT7003 Microcontroladores y Microprocesadores**
+* Instituto Tecnológico de Costa Rica (ITCR)
+* Ingeniería Mecatrónica — I Semestre 2026
 
 ---
 
@@ -28,7 +28,7 @@ sdkfjsdkfjsdlfjsldfkj le podemos agregar detalles luego
 ---
 ## 🏫 Información del Curso
 
-Curso: MT-7003 Microprocesadores y Microcontroladores
-Profesor: Ing. Rodolfo Piedra Camacho
-Institución: Instituto Tecnológico de Costa Rica
-Semestre: I Semestre 2026
+* Curso: MT-7003 Microprocesadores y Microcontroladores
+* Profesor: Ing. Rodolfo Piedra Camacho
+* Institución: Instituto Tecnológico de Costa Rica
+* Semestre: I Semestre 2026
