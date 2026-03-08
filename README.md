@@ -1,10 +1,10 @@
-# 👕 Sistema de Percheros Circulares Inteligentes
+# Sistema de Percheros Circulares Inteligentes
 
 * **Proyecto Final — MT7003 Microcontroladores y Microprocesadores**
 * Instituto Tecnológico de Costa Rica (ITCR)
 * Ingeniería Mecatrónica — I Semestre 2026
 
-## 👥 Integrantes
+## Integrantes
 
 * Sebastián Emilio Campos Ramírez
 * María Jimena Araya Arguedas
@@ -20,7 +20,7 @@ El sistema está inspirado en percheros rotatorios donde el usuario **no necesit
 
 sdkfjsdkfjsdlfjsldfkj le podemos agregar detalles luego
 
-## 🏫 Información del Curso
+## Información del Curso
 
 * Curso: MT-7003 Microprocesadores y Microcontroladores
 * Profesor: Ing. Rodolfo Piedra Camacho
