@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream> 
 #include <thread>
-//#include <mutex>
-#include <chrono>
-//#include <gpiod.hpp> 
+#include <cstdlib> // Libreria necesaria para usar system()
+#include <string>  // Libreria para manipular texto
 
-//std::mutex mtx; //mutex en caso de usar el mismo archivo para ambos
+//Se elimina librería gpiod pues la sintáxis es incorreccta debido a la versión.
+
 
 void SecuenciaFibonacci() {
     std::ofstream file("Fibonacci.txt");
@@ -53,67 +53,74 @@ void Tablas(){
     }
 
 
-
+//Se añade función que manda comandos para ver el estado del pin al botón.
+}
+bool leerBotonFisico() {
+    // Ejecuta el comando para leer el stado del pin 17 y lo guarda en un .txt
+    system("pinctrl get 17 > estado_boton.txt");
+    
+    // Lee el archivo 
+    std::ifstream file("estado_boton.txt");
+    std::string contenido;
+    
+    if (file.is_open()) {
+        std::getline(file, contenido);
+        file.close();
+        
+        // terminal responde "hi" cuando hay 3.3V (boton presionado)
+        if (contenido.find("hi") != std::string::npos) {
+            return true;
+        }
+    }
+    return false; // Retorna falso si lee "lo" (0V)
 }
 
 int main() {
+    //Envía el comando nativo a Linux que define el pin GPIO 17 como un input.
+    system("pinctrl set 17 ip");
 
-    // gpiod::chip ("gpiochip4");
-    // gpiod::line linea= chip.get.line (17);
-    // linea.boton.request({"FibonacciTablasRPI", gpiod::line_request:DIRECTION_INPUT, 0});
+    std::cout << "Presione el boton para comenzar..." << std::endl;
 
-    std::cout <<"Presion el botón para comenzar" << std::endl;
+    // El programa se queda pegado aqui hasta que se presione el botón.
+    while (!leerBotonFisico()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
 
-    // while (linea_boton.get_value() == 0) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    // }
-
-    std::cout << "Boton presionado. Iniciando procesos..." << std::endl;
+    std::cout << "Boton presionado. Iniciando..." << std::endl;
 
     std::cout << "Modo Secuencial" << std::endl;
-    auto inicio_secuencial =  std::chrono::high_resolution_clock::now();
+    auto inicio_secuencial = std::chrono::high_resolution_clock::now();
 
     SecuenciaFibonacci();
     Tablas();
 
     auto fin_secuencial = std::chrono::high_resolution_clock::now();   
-
     std::chrono::duration<double> tiempo_secuencial = fin_secuencial - inicio_secuencial;
-
-    std::cout << "Duracion de proceso secuencial:" << tiempo_secuencial.count() << std::endl;
+    std::cout << "Duracion de proceso secuencial: " << tiempo_secuencial.count() << " segundos" << std::endl;
 
     std::cout << "Modo Paralelo" << std::endl;
+    auto inicio_paralelo = std::chrono::high_resolution_clock::now();
 
-    auto inicio_paralelo =  std::chrono::high_resolution_clock::now();
-
-    std::thread thread1 (SecuenciaFibonacci);
-    std::thread thread2 (Tablas);
+    std::thread thread1(SecuenciaFibonacci);
+    std::thread thread2(Tablas);
     
     thread1.join();
     thread2.join();
     
     auto fin_paralelo = std::chrono::high_resolution_clock::now();   
-
     std::chrono::duration<double> tiempo_paralelo = fin_paralelo - inicio_paralelo;
+    std::cout << "Duracion de proceso paralelo: " << tiempo_paralelo.count() << " segundos" << std::endl;
 
-    std::cout << "Duracion de proceso paralelo:" << tiempo_paralelo.count() << std::endl;
+    // Envia el comando nativo a Linux para encender el LED.
+    system("pinctrl set 27 op dh");
+    std::cout << "Proceso terminado. LED encendido" << std::endl;
 
-    //Configura el pin del LED como salida
-
-    // gpiod::line linea_led = chip.get_line(27); // GPIO 27
-    // linea_led.request({"mi_programa", gpiod::line_request::DIRECTION_OUTPUT, 0});
-
-    // Envia la senal para encender el LED 
-
-    // linea_led.set_value(1);
-    std::cout << "Proceso terminado. LED encendido en GPIO 27." << std::endl;
-
-    // Opcional: Mantener el LED encendido  antes de que  programa termine y lo apagué
-
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    // linea_led.set_value(0); // Apagar
+    // Mantiene el LED encendido X segundos
+    std::this_thread::sleep_for(std::chrono::seconds(20));
+    
+    // Envia el comando nativo a Linux para apagar el LED.
+    system("pinctrl set 27 op dl"); 
+    std::cout << "LED apagado. Fin del programa." << std::endl;
 
     return 0;
-
-
 }
