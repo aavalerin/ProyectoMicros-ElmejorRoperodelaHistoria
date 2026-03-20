@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream> 
 #include <thread>
+#include <chrono>
 #include <cstdlib> // Libreria necesaria para usar system()
 #include <string>  // Libreria para manipular texto
 
@@ -34,6 +35,7 @@ void Tablas(){
         for (int i = 1; i <11; i++ ) {
             a=i;
             file << "Tabla del " << a << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             
             for (int k = 0; k <11; k++) {
                 b = a*k;
@@ -42,6 +44,7 @@ void Tablas(){
 
             }
             file << "----------------------" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             
 
         }
