@@ -2,3 +2,5 @@ Instalar servidor en la Raspberry:
 sudo apt update
 sudo apt install python3-pip
 pip3 install flask pyserial
+
+Tutorial para subir página: https://youtu.be/x4Zb-CoBHO0?si=fAOypBvJG_gf1o4h
