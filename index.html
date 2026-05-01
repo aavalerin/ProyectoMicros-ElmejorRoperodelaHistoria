@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Extraer Prenda</title>
+</head>
+<body>
+
+<h2>Solicitar Prenda</h2>
+
+<form action="/extraer" method="POST">
+
+    <!-- Tipo obligatorio -->
+    <label>Tipo de prenda (Obligatorio):</label>
+    <select name="tipo" required>
+        <option value="">Seleccione</option>
+        <option value="T-Shirt">T-Shirt</option>
+        <option value="Pantalon">Pantalon</option>
+        <option value="Short">Short</option>
+        <option value="Camisa Manga Larga">Camisa Manga Larga</option>
+        <option value="Enagua">Enagua</option>
+    </select>
+    <br><br>
+
+    <!-- Opcionales -->
+    <label>Color:</label>
+    <select name="color">
+        <option value="">No especificar</option>
+        <option value="Blanco">Blanco</option>
+        <option value="Negro">Negro</option>
+        <option value="Cafe">Cafe</option>
+        <option value="Azul">Azul</option>
+        <option value="Gris">Gris</option>
+    </select>
+    <br><br>
+
+    <label>Tipo de tela:</label>
+    <select name="tela">
+        <option value="">No especificar</option>
+        <option value="Denim">Denim</option>
+        <option value="Algodon">Algodon</option>
+        <option value="Polyester">Polyester</option>
+        <option value="Seda">Seda</option>
+        <option value="Lino">Lino</option>
+    </select>
+    <br><br>
+
+    <label>Tallas:</label>
+    <select name="talla">
+        <option value="">No especificar</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+        <option value="XXL">XXL</option>
+    </select>
+    <br><br>
+
+    <label>Fit:</label>
+    <select name="fit">
+        <option value="">No especificar</option>
+        <option value="Regular">Regular</option>
+        <option value="Skinny">Skinny</option>
+        <option value="Slim">Slim</option>
+        <option value="Loose"> Loose</option>
+        <option value="Oversized">Oversized</option>
+    </select>
+    <br><br>
+
+    <button type="submit">Extraer</button>
+
+</form>
+
+</body>
+</html>
