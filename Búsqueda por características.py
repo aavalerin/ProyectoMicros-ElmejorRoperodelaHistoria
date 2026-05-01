@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, jsonify
 import serial
 
-app = Flask(Características)
+app = Flask(__name__) #Cambio por variable automática "name" para que busque el archivo en la ubicación actual
 
 # Configuración RS232 UART
-ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+ser = serial.Serial('/dev/serial0', 9600, timeout=1) # Serial0 funciona de manera universa. Se puede cambiar por ttyS0 en caso de escoger UART
 
 prendas = [
-    {"nombre":"Camisa1","tipo":"T-Shirt","color":"Negro","tela":"Algodón","talla":"M","fit":"Regular","perchero":1,"posicion":1},
-    {"nombre":"Pantalon1","tipo":"Pantalón","color":"Azul","tela":"Denim","talla":"L","fit":"Slim","perchero":2,"posicion":3},
+    {"nombre":"Camisa1","tipo":"T-Shirt","color":"Negro","tela":"Algodon","talla":"M","fit":"Regular","perchero":1,"posicion":1},
+    {"nombre":"Pantalon1","tipo":"Pantalon","color":"Azul","tela":"Denim","talla":"L","fit":"Slim","perchero":2,"posicion":3},
 ]
 
 def coincide(prenda, solicitud):
