@@ -1,74 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Extraer Prenda</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extraer Prenda | Fashion Admin</title>
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Solicitar Prenda</h2>
+<div class="container">
+    <div class="form-card">
+        <div class="header">
+            <i class="fas fa-tshirt"></i>
+            <h2>Solicitar Prenda</h2>
+            <p>Selecciona las especificaciones de la prenda a extraer</p>
+        </div>
 
-<form action="/extraer" method="POST">
+        <form action="/extraer" method="POST" id="garmentForm">
 
-    <!-- Tipo obligatorio -->
-    <label>Tipo de prenda (Obligatorio):</label>
-    <select name="tipo" required>
-        <option value="">Seleccione</option>
-        <option value="T-Shirt">T-Shirt</option>
-        <option value="Pantalon">Pantalon</option>
-        <option value="Short">Short</option>
-        <option value="Camisa Manga Larga">Camisa Manga Larga</option>
-        <option value="Enagua">Enagua</option>
-    </select>
-    <br><br>
+            <div class="input-group">
+                <label><i class="fas fa-star"></i> Tipo de prenda (Obligatorio):</label>
+                <select name="tipo" required>
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <option value="T-Shirt">T-Shirt</option>
+                    <option value="Pantalon">Pantalon</option>
+                    <option value="Short">Short</option>
+                    <option value="Camisa Manga Larga">Camisa Manga Larga</option>
+                    <option value="Enagua">Enagua</option>
+                </select>
+            </div>
 
-    <!-- Opcionales -->
-    <label>Color:</label>
-    <select name="color">
-        <option value="">No especificar</option>
-        <option value="Blanco">Blanco</option>
-        <option value="Negro">Negro</option>
-        <option value="Cafe">Cafe</option>
-        <option value="Azul">Azul</option>
-        <option value="Gris">Gris</option>
-    </select>
-    <br><br>
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Color:</label>
+                    <select name="color">
+                        <option value="">Cualquiera</option>
+                        <option value="Blanco">Blanco</option>
+                        <option value="Negro">Negro</option>
+                        <option value="Cafe">Cafe</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Gris">Gris</option>
+                    </select>
+                </div>
 
-    <label>Tipo de tela:</label>
-    <select name="tela">
-        <option value="">No especificar</option>
-        <option value="Denim">Denim</option>
-        <option value="Algodon">Algodon</option>
-        <option value="Polyester">Polyester</option>
-        <option value="Seda">Seda</option>
-        <option value="Lino">Lino</option>
-    </select>
-    <br><br>
+                <div class="input-group">
+                    <label>Tipo de tela:</label>
+                    <select name="tela">
+                        <option value="">No especificar</option>
+                        <option value="Denim">Denim</option>
+                        <option value="Algodon">Algodon</option>
+                        <option value="Polyester">Polyester</option>
+                        <option value="Seda">Seda</option>
+                        <option value="Lino">Lino</option>
+                    </select>
+                </div>
 
-    <label>Tallas:</label>
-    <select name="talla">
-        <option value="">No especificar</option>
-        <option value="S">S</option>
-        <option value="M">M</option>
-        <option value="L">L</option>
-        <option value="XL">XL</option>
-        <option value="XXL">XXL</option>
-    </select>
-    <br><br>
+                <div class="input-group">
+                    <label>Talla:</label>
+                    <select name="talla">
+                        <option value="">Cualquiera</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                </div>
 
-    <label>Fit:</label>
-    <select name="fit">
-        <option value="">No especificar</option>
-        <option value="Regular">Regular</option>
-        <option value="Skinny">Skinny</option>
-        <option value="Slim">Slim</option>
-        <option value="Loose"> Loose</option>
-        <option value="Oversized">Oversized</option>
-    </select>
-    <br><br>
+                <div class="input-group">
+                    <label>Fit:</label>
+                    <select name="fit">
+                        <option value="">No especificar</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Skinny">Skinny</option>
+                        <option value="Slim">Slim</option>
+                        <option value="Loose">Loose</option>
+                        <option value="Oversized">Oversized</option>
+                    </select>
+                </div>
+            </div>
 
-    <button type="submit">Extraer</button>
+            <button type="submit" class="btn-submit">
+                <span>Extraer Prenda</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
 
-</form>
+        </form>
+    </div>
+</div>
 
+<script src="script.js"></script>
 </body>
 </html>
