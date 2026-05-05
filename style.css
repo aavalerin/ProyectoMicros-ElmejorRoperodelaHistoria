@@ -1,0 +1,142 @@
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.form-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.form-card:hover {
+    transform: translateY(-5px);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.header h2 {
+    color: var(--text-main);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.grid-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+label i {
+    color: var(--primary);
+    font-size: 0.7rem;
+    margin-right: 5px;
+}
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #f9fafb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+select:focus {
+    border-color: var(--primary);
+    background-color: var(--white);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.btn-submit {
+    width: 100%;
+    background-color: var(--primary);
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .grid-inputs {
+        grid-template-columns: 1fr;
+    }
+}
