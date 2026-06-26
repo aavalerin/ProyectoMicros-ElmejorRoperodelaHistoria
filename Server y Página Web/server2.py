@@ -7,7 +7,7 @@ app = Flask(__name__)
 prendasXperch = 5
 percheros = 3
 
-# Configuración RS232 UART
+###CONFIGURACION_RS232: INTENTA ABRIR PUERTO SERIAL PARA CONTROLAR EL MOTOR, SINO ACTIVA MODO PRUEBA
 try:
     ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 except:
@@ -23,7 +23,7 @@ def index():
 
 
 
-#Se carga el inventario.txt
+###CARGAR_INVENTARIO: LEE inventario.txt Y RETORNA LA LISTA DE PRENDAS O UNA LISTA VACÍA SI NO EXISTE
 def cargar_inventario():
     if not os.path.exists(inventario):
         with open(inventario, 'w') as file:
@@ -36,41 +36,46 @@ def cargar_inventario():
         except json.JSONDecodeError:
             return []
         
+###GUARDAR_INVENTARIO: ESCRIBE LA LISTA DE PRENDAS EN inventario.txt Y FORMATEA EL JSON
 def guardar_inventario(lista_prendas):
     with open(inventario, 'w') as file:
         json.dump(lista_prendas, file, indent=4)
 
 @app.route('/obtener_catalogo_previas', methods=['GET'])
+###OBTENER_CATALOGO_PREVIAS: DEVUELVE LOS NOMBRES DE LAS PRENDAS EXTRAIDAS AL CLIENTE
 def obtener_catalogo_previas():
     prendas = cargar_inventario()
     nombres_disponibles = []
     
     for prenda in prendas:
-        # Solo enviamos a la interfaz las prendas que ya están fuera del perchero
+        ###OBTENER_CATALOGO_PREVIAS: INCLUYE SOLO PRENDAS CON ESTADO extraida
         if prenda.get("estado") == "extraida":
             nombres_disponibles.append(prenda["nombre"])
             
     return jsonify({"catalogo": nombres_disponibles})
 
 @app.route('/obtener_inventario', methods=['GET'])
+###OBTENER_INVENTARIO: DEVUELVE TODO EL INVENTARIO ACTUAL AL CLIENTE
 def obtener_inventario():
     return jsonify({"inventario": cargar_inventario()})
 
 @app.route('/obtener_catalogo', methods=['GET'])
+###OBTENER_CATALOGO: DEVUELVE NOMBRES DE PRENDAS COLGADAS AL CLIENTE
 def obtener_catalogo():
     prendas = cargar_inventario()
     nombres_disponibles = []
     
     for prenda in prendas:
-        # Solo enviamos a la interfaz las prendas que están en el perchero
+        ###OBTENER_CATALOGO: SOLO INCLUYE PRENDAS CON ESTADO colgada
         if prenda.get("estado") == "colgada":
             nombres_disponibles.append(prenda["nombre"])
             
     return jsonify({"catalogo": nombres_disponibles})
 
 @app.route('/sobrescribir_inventario', methods=['POST'])
+###SOBRESCRIBIR_INVENTARIO: RECIBE JSON CON NUEVO_INVENTARIO Y SOBRESCRIBE EL ARCHIVO DE INVENTARIO
 def sobrescribir_inventario():
-    # En lugar de request.form, usamos request.json porque mandamos una lista compleja
+    ###SOBRESCRIBIR_INVENTARIO: usa request.json porque el inventario se envía como estructura JSON
     datos = request.json
     
     if not datos or "nuevo_inventario" not in datos:
@@ -85,35 +90,35 @@ def sobrescribir_inventario():
     return jsonify({"status": "ok", "mensaje": "Estado del perchero actualizado correctamente."})
 
 @app.route ('/agregar_nueva', methods = ['GET', 'POST'])
+###AGREGAR_NUEVA: RECIBE DATOS DE UNA NUEVA PRENDA Y LA REGISTRA EN EL INVENTARIO
 def agregar_nueva():
     prendas = cargar_inventario()
-
 
     nuevo_nombre = request.form.get("nombre")
     perchero_dest = request.form.get("perchero")
      
-          # VALIDACIÓN 1: Impedir nombre repetido
+    ###AGREGAR_NUEVA: IMPIDE NOMBRES REPETIDOS
     for p in prendas:
         if p["nombre"].lower() == nuevo_nombre.lower():
             return jsonify({"status": "error", "mensaje": f"El nombre '{nuevo_nombre}' ya existe en el sistema."})
      
-     # Cálculos de capacidad
+    ###AGREGAR_NUEVA: CALCULA ESPACIO DISPONIBLE EN EL PERCHERO Y EL SISTEMA
     colgadas_perch_dest = [p for p in prendas if p.get("perchero") == perchero_dest and p.get("estado")== "colgada"]
     total_prendas_sistema = sum(1 for p in prendas if p.get("estado")== "colgada")
      
-     # VALIDACIÓN 2: Llenado total del sistema
+    ###AGREGAR_NUEVA: BLOQUEO POR FALTA DE ESPACIO TOTAL
     if total_prendas_sistema >= (prendasXperch * percheros):
         return jsonify({"status": "error", "mensaje": "Sistema bloqueado: Todos los percheros están completamente llenos."})
          
-     # VALIDACIÓN 3: Llenado del perchero específico
+    ###AGREGAR_NUEVA: BLOQUEO POR FALTA DE ESPACIO EN PERCHERO
     if len(colgadas_perch_dest) >= prendasXperch:
         return jsonify({"status": "error", "mensaje": f"El Perchero {perchero_dest} no tiene más espacio."})
      
-     # Asignar la siguiente posición física disponible en ese perchero
+    ###AGREGAR_NUEVA: ASIGNA LA PRIMERA POSICION FISICA LIBRE EN EL PERCHERO
     ocupados = [int(p["posicion"]) for p in colgadas_perch_dest]
     posicion_fisica = None
 
-    for i in  range(1, prendasXperch + 1 ):
+    for i in range(1, prendasXperch + 1):
         if i not in ocupados:
             posicion_fisica = i
             break
@@ -132,14 +137,15 @@ def agregar_nueva():
      }
      
     prendas.append(nueva_prenda)
-    guardar_inventario(prendas) # Sobrescribir el .txt
+    ###AGREGAR_NUEVA: GUARDAR LA NUEVA PRENDA EN EL ARCHIVO DE INVENTARIO
+    guardar_inventario(prendas)
 
     comando = f"<{perchero_dest},{posicion_fisica}\n"
     if ser is not None:
         ser.write(comando.encode())
         print(f"[EXITO] Moviendo motor para guardar prenda: {comando.strip()}")
     else:
-        print(f"[MODO PRUEBA] El motor se movería a: P{perchero_dest}, Pos{posicion_fisica}")
+        return
     
 
     
@@ -148,25 +154,25 @@ def agregar_nueva():
     return jsonify({"status": "ok", "mensaje": f"Prenda '{nuevo_nombre}' registrada exitosamente."})
     
 @app.route ('/agregar_previa', methods = ['GET', 'POST'])
+###AGREGAR_PREVIA: REINGRESA UNA PRENDA EXTRAIDA AL PERCHERO Y ACTUALIZA SU ESTADO
 def agregar_previa():
     prendas = cargar_inventario()
 
     nombre = request.form.get("nombre")
     perchero_dest = request.form.get("perchero")
 
-    # Cálculos de capacidad
+    ###AGREGAR_PREVIA: CALCULA ESPACIO EN EL PERCHERO DESTINO
     colgadas_perch_dest = [p for p in prendas if p.get("perchero") == perchero_dest and p.get("estado") == "colgada"]
     total_prendas_sistema = sum(1 for p in prendas if p.get("estado") == "colgada")
 
-    # VALIDACIÓN 2: Llenado total del sistema
     if total_prendas_sistema >= (prendasXperch * percheros):
         return jsonify({"status": "error", "mensaje": "Sistema bloqueado: Todos los percheros están completamente llenos."})
 
-    # VALIDACIÓN 3: Llenado del perchero específico
+    ###AGREGAR_PREVIA: VALIDACION 3 - bloquea si el perchero específico está lleno
     if len(colgadas_perch_dest) >= prendasXperch:
         return jsonify({"status": "error", "mensaje": f"El Perchero {perchero_dest} no tiene más espacio."})
 
-    # Asignar la siguiente posición física disponible en ese perchero
+    ###AGREGAR_PREVIA: ASIGNA LA PRIMERA POSICION LIBRE EN EL PERCHERO DESTINO
     ocupados = [int(p["posicion"]) for p in colgadas_perch_dest]
     posicion_fisica = None
 
@@ -176,6 +182,7 @@ def agregar_previa():
             break
 
     for prenda in prendas:
+        ###AGREGAR_PREVIA: BUSCA LA PRENDA EN INVENTARIO PARA REINGRESARLA
         if prenda.get("nombre") == nombre:
             
             prenda["estado"] = "colgada"
@@ -189,20 +196,22 @@ def agregar_previa():
                 ser.write(comando.encode())
                 print(f"[EXITO] Moviendo motor para guardar prenda: {comando.strip()}")
             else:
-                print(f"[MODO PRUEBA] El motor se movería a: P{perchero_dest}, Pos{posicion_fisica}")
+                return
 
             return jsonify({"status": "ok", "mensaje": "Prenda reingresada"})
 
     print(f"\n[REINGRESO] {nombre} guardada en P:{perchero_dest} Pos:{posicion_fisica}")
     return jsonify({"status": "ok", "mensaje": f"Prenda '{nombre}' reinsertada exitosamente."})
 
+###COINCIDE: COMPARA CADA CAMPO NO VACÍO DE LA SOLICITUD CON LA PRENDA
 def coincide(prenda, solicitud):
+    ###COINCIDE: COMPARA CADA CAMPO NO VACÍO DE LA SOLICITUD CON LA PRENDA
     for llave in solicitud:
         if solicitud[llave] and prenda[llave] != solicitud[llave]:
             return False
     return True
 
-#Se genera la página con el estilo y formato asignado
+###EXTRAER: RUTA QUE BUSCA UNA PRENDA COLGADA SEGÚN FILTROS Y ACTUALIZA EL INVENTARIO
 
 @app.route('/extraer', methods=['POST'])
 def extraer():
@@ -221,11 +230,11 @@ def extraer():
     print(f"[INFO] Datos crudos del formulario: {solicitud}")
     print("[INFO] ----------------------------\n")
 
-    # Tipo de prenda obligatorio
+    ###EXTRAER: tipo de prenda es obligatorio para realizar la búsqueda
     if not solicitud["tipo"]:
         return jsonify({"status":"error","mensaje":"Debe indicar tipo de prenda"})
 
-    #Se busca una coincidencia en el inventario
+    ###EXTRAER: busca la primera prenda colgada que coincida con todos los filtros
     for prenda in prendas:
         if  prenda.get("estado") == "colgada" and coincide(prenda, solicitud):
             comando = f"<{prenda['perchero']},{prenda['posicion']}\n"
@@ -234,9 +243,9 @@ def extraer():
                 ser.write(comando.encode())
                 print(f"[EXITO] Extrayendo prenda: Comando enviado -> {comando.strip()}")
             else:
-                print(f"[MODO PRUEBA] Se extraería de: {comando.strip()}")
+                return
 
-            #Se actualiza el inventario para eliminar la prenda extraída
+            ###EXTRAER: ACTUALIZA EL ESTADO DE LA PRENDA A extraida Y LA SACA DEL PERCHERO
             prenda["estado"] = "extraida"
             prenda["perchero"] = "None"
             prenda["posicion"] = "None"
@@ -249,15 +258,16 @@ def extraer():
 
     return jsonify({"status":"error","mensaje":"No se encontró dicha prenda"})
 
-
+###EXTRAER_NOMBRE: EXTRAE UNA PRENDA POR NOMBRE EXPLÍCITO SI ESTÁ COLGADA
 @app.route('/extraer_nombre', methods=['POST'])
+
 def extraer_nombre():
 
     nombre = request.form.get("nombre")
     prendas = cargar_inventario()
     
 
-    #Se busca una coincidencia en el inventario
+    ###EXTRAER_NOMBRE: BUSCA LA PRENDA COLGADA QUE COINCIDA POR NOMBRE
     for prenda in prendas:
         if  prenda.get("estado") == "colgada" and prenda.get("nombre").lower() == nombre.lower():
             comando = f"<{prenda['perchero']},{prenda['posicion']}\n"
@@ -266,11 +276,11 @@ def extraer_nombre():
                 ser.write(comando.encode())
                 print(f"[EXITO] Extrayendo '{nombre}': Comando enviado -> {comando.strip()}")
 
-                # Agrega esto para la prueba de loopback
+                ###EXTRAER_NOMBRE: LEE RESPUESTA DEL LOOPBACK SERIAL SI ESTÁ DISPONIBLE
                 respuesta = ser.readline().decode().strip()
                 print(f"[LOOPBACK] Recibido de vuelta: {respuesta}")
 
-            #Se actualiza el inventario para eliminar la prenda extraída
+            ###EXTRAER_NOMBRE: ACTUALIZA EL ESTADO DE LA PRENDA A extraida
             prenda["estado"] = "extraida"
             prenda["perchero"] = "None"
             prenda["posicion"] = "None"
@@ -284,6 +294,7 @@ def extraer_nombre():
     return jsonify({"status":"error","mensaje":"No se encontró dicha prenda"})
 
 @app.route('/eliminar', methods = ['POST', 'GET'])
+###ELIMINAR: BORRA UNA PRENDA DEL HISTORIAL SI NO ESTÁ COLGADA EN EL PERCHERO
 def eliminar():
     
     nombre = request.form.get("nombre")
@@ -307,6 +318,6 @@ def eliminar():
 
 
 
-#Creación del server para hostear la página web
+#CREACIÓN DEL SERVER DE PÁGINA WEB
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug = True)
