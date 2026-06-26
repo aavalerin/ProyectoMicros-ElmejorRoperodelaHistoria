@@ -4,6 +4,25 @@ import requests
 import json
 import os
 
+
+####DOCUMENTACION##########3
+
+###INTERFAZ CON LAS SIGUIENTES FUNCIONES: 
+
+###VISTA AGREGAR SE DIVIDE EN DOS: NUEVA Y VIEJA
+###NUEVA: SOLICITA NOMBRE Y CARACTERÍSTICAS DE LA PRENDA NUEVA. DETECTA SI LA PRENDA EXISTE DENTRO O FUERA DEL PERCHERO
+###PREVIA: RECUERDA PRENDAS EXTRAÍDAS
+
+###EXTRAER PRENDA: PERMITE EXTRAER PRENDAS COLGADAS POR NOMBRE
+
+###ELIMINAR PRENDA: PERMITE ELIMINAR PRENDAS EXTRAÍDAS
+
+###DIAGRAMA DE ESTADO: PRESENTA UN ENTORNO VISUAL QUE PRESENTA EL ESTADO ACTUAL DEL INVENTARIO
+
+###CARGAR ESTADO: PERMITE CARGAR UN ARCHIVO .TXT (NOMBRE: INVENTARIO) QUE ACTUALIZA EL ESTADO DEL INVENTARIO 
+
+###INFORME POR CARACTERÍSTICAS: PRESENTA UNA LISTA DE PRENDAS SEGÚN LOS FILTROS QUE SE APLIQUEN.
+
 class InterfazPercheros:
     def __init__(self, ventana):
         self.ventana = ventana
@@ -80,13 +99,14 @@ class InterfazPercheros:
 
 
 
-        # Botones de acción
+       
         tk.Button(self.ventana, text="Validar", command=self.validacion1_flask, bg="#90EE90", font=("Arial", 11)).pack(pady=15)
         tk.Button(self.ventana, text="Volver al Menú", command=self.crear_menu, font=("Arial", 11)).pack()
 
 
+    ###VALIDACION1_FLASK: ENVÍA DATOS DE LA NUEVA PRENDA AL SERVIDOR FLASK PARA VALIDAR Y AGREGARLA
     def validacion1_flask(self):
-       
+        
         datos = {
             "nombre": self.input_nombre.get(),
             "tipo": self.tipo_prenda.get(),
@@ -96,7 +116,7 @@ class InterfazPercheros:
             "fit": self.input_fit.get(),
             "perchero": self.input_perchero.get() 
         }
-
+        ###VALIDACION1_FLASK: VERIFICA QUE TODOS LOS CAMPOS ESTÉN LLENOS
         if not all(datos.values()):
             messagebox.showwarning("Faltan datos", "Por favor, complete todos los campos del formulario.")
             return
@@ -113,7 +133,7 @@ class InterfazPercheros:
                 info = respuesta.json()
                 if info.get("status") == "ok":
                     messagebox.showinfo("Éxito", info.get("mensaje"))
-                    # Refrescar la vista tras el éxito
+                   
                     for vista in self.ventana.winfo_children():
                         vista.destroy()
                     self.vista_agregar() 
@@ -153,7 +173,9 @@ class InterfazPercheros:
         tk.Button(self.ventana, text="Reinsertar Prenda Seleccionada", command=self.validacion2_flask, bg="#90EE90", font=("Arial", 11)).pack(pady=15)
         tk.Button(self.ventana, text="Volver", command=self.vista_agregar, font=("Arial", 11)).pack()
     
+    ###VALIDACION2_FLASK: REINSERTA UNA PRENDA PREVIA EN EL PERCHERO SELECCIONADO Y LO ENVÍA AL SERVIDOR
     def validacion2_flask(self):
+        ###VALIDACION2_FLASK: verifica que haya prenda y perchero seleccionados
         nombre_seleccionado = self.seleccionar_prenda.get()
         perchero_seleccionado = self.input_perchero.get()
         
@@ -180,7 +202,7 @@ class InterfazPercheros:
                 info = respuesta.json()
                 if info.get("status") == "ok":
                     messagebox.showinfo("Éxito", info.get("mensaje"))
-                    # Regresar al submenú de agregar tras el éxito
+                    ###VALIDACION2_FLASK: regresar al submenú de agregar tras el éxito
                     for vista in self.ventana.winfo_children():
                         vista.destroy()
                     self.vista_agregar() 
@@ -194,6 +216,7 @@ class InterfazPercheros:
 
     #def agregar_prenda_flask():
 
+    ###CARGAR_PRENDAS_PREVIAS: OBTIENE LA LISTA DE PRENDAS EXTRAÍDAS DEL SERVIDOR FLASK
     def cargar_prendas_previas(self):
         url = f"{self.url_pagina}/obtener_catalogo_previas"
 
@@ -209,6 +232,7 @@ class InterfazPercheros:
             messagebox.showerror("Error de Conexión", f"No se pudo conectar: {e}")
             return []
         
+    ###CARGAR_NOMBRES_PRENDAS: OBTIENE LA LISTA COMPLETA DE PRENDAS DISPONIBLES PARA EXTRAER
     def cargar_nombres_prendas(self):
         url = f"{self.url_pagina}/obtener_catalogo"
 
@@ -248,9 +272,11 @@ class InterfazPercheros:
         tk.Button(self.ventana, text="Volver", command=self.crear_menu, font=("Arial", 11)).pack()
         
        
+    ###VALIDACION3_FLASK: PIDE AL SERVIDOR LA ELIMINACIÓN DE LA PRENDA EXTRAÍDA SELECCIONADA
     def validacion3_flask(self):
+        
         nombre_seleccionado = self.seleccionar_prenda.get()
-
+        ###VALIDACION3_FLASK: VERIFICA QUE SE HAYA SELECCIONADO UNA PRENDA
         if not nombre_seleccionado:
             messagebox.showwarning("Faltan Datos.", "Seleccione una prenda")
             return
@@ -306,6 +332,7 @@ class InterfazPercheros:
 
 
     def validacion4_flask(self):
+        ###VALIDACION4_FLASK: VERIFICA QUE SE HAYA SELECCIONADO UNA PRENDA
         prenda_seleccionada = self.seleccionar_prenda.get()
 
         if not prenda_seleccionada:
@@ -327,7 +354,7 @@ class InterfazPercheros:
                 info = respuesta.json()
                 if info.get("status") == "ok":
                     messagebox.showinfo("Éxito", info.get("mensaje"))
-                    # Regresar al submenú de agregar tras el éxito
+                    
                     for vista in self.ventana.winfo_children():
                         vista.destroy()
                     self.crear_menu() 
@@ -345,11 +372,11 @@ class InterfazPercheros:
 
         tk.Label(self.ventana, text="Informe por Características", font=("Arial", 16, "bold")).pack(pady=10)
 
-        # Contenedor para los filtros
+        ###CONTENEDOR PARA FILTROS
         frame_filtros = tk.Frame(self.ventana)
         frame_filtros.pack(pady=5)
 
-        # Cajas de selección (El primer valor es "" para permitir dejar el filtro en blanco)
+        ### cAJAS DE SELECCIÓN (El primer valor es "" para permitir dejar el filtro en blanco)
         tk.Label(frame_filtros, text="Tipo:").grid(row=0, column=0, padx=5, sticky="e")
         self.filtro_tipo = ttk.Combobox(frame_filtros, values=["", "T-Shirt", "Pantalón", "Short", "Camisa Manga Larga", "Enagua"], width=12, state="readonly")
         self.filtro_tipo.grid(row=0, column=1, padx=5)
@@ -370,14 +397,14 @@ class InterfazPercheros:
         self.filtro_fit = ttk.Combobox(frame_filtros, values=["", "Regular", "Skinny", "Slim", "Loose", "Oversized"], width=10, state="readonly")
         self.filtro_fit.grid(row=1, column=3, padx=5, pady=5)
 
-        # Botón para ejecutar la búsqueda
+       
         tk.Button(frame_filtros, text="Filtrar", command=self.ejecutar_filtro, bg="#0965CE", fg="white").grid(row=1, column=4, columnspan=2, padx=5, pady=5, sticky="we")
 
-        # Configuración de la tabla (Treeview) para mostrar los resultados
+       
         columnas = ("Nombre", "Tipo", "Color", "Talla", "Ubicación")
         self.tabla_resultados = ttk.Treeview(self.ventana, columns=columnas, show="headings", height=8)
         
-        # Definir los encabezados y anchos de columna
+       
         self.tabla_resultados.heading("Nombre", text="Nombre")
         self.tabla_resultados.column("Nombre", width=120)
         self.tabla_resultados.heading("Tipo", text="Tipo")
@@ -391,15 +418,16 @@ class InterfazPercheros:
 
         self.tabla_resultados.pack(pady=10)
 
-        # Botón inferior
+       
         tk.Button(self.ventana, text="Volver al Menú", command=self.crear_menu, font=("Arial", 11)).pack(pady=5)
 
+    ###EJECUTAR_FILTRO: OBTIENE EL INVENTARIO DEL SERVIDOR Y APLICA LOS FILTROS SELECCIONADOS
     def ejecutar_filtro(self):
-        # 1. Limpiar la tabla de resultados anteriores
+        ###EJECUTAR_FILTRO: LIMPIA RESULTADOS PREVIOS ANTES DE FILTRAR
         for fila in self.tabla_resultados.get_children():
             self.tabla_resultados.delete(fila)
 
-        # 2. Recolectar lo que el usuario seleccionó (los vacíos se ignoran)
+        ###EJECUTAR_FILTRO: DEJA CADENAS VACÍAS COMO IGNORAR
         filtros = {
             "tipo": self.filtro_tipo.get(),
             "color": self.filtro_color.get(),
@@ -408,7 +436,7 @@ class InterfazPercheros:
             "fit": self.filtro_fit.get()
         }
 
-        # 3. Pedir el inventario actual a Flask
+       
         inventario = []
         try:
             respuesta = requests.get(f"{self.url_pagina}/obtener_inventario")
@@ -421,20 +449,20 @@ class InterfazPercheros:
             messagebox.showerror("Error de Conexión", "No hay conexión con el servidor Flask.")
             return
 
-        # 4. Aplicar la lógica de filtrado universal
+        ###EJECUTAR_FILTRO: APLICA FILTROS A PRENDAS COLGADAS
         for prenda in inventario:
-            # Solo buscamos entre lo que está físicamente colgado
+            
             if prenda.get("estado") != "colgada":
                 continue
 
             coincide = True
             for clave, valor_filtro in filtros.items():
-                # Si hay un filtro seleccionado y no es igual a la característica de la prenda, se descarta
+                ###EJECUTAR_FILTRO: ignora filtros vacíos y compara los demás
                 if valor_filtro != "" and prenda.get(clave) != valor_filtro:
                     coincide = False
                     break
             
-            # Si superó todos los filtros, lo agregamos a la tabla
+            
             if coincide:
                 ubicacion = f"P:{prenda['perchero']} - Pos:{prenda['posicion']}"
                 self.tabla_resultados.insert("", "end", values=(
@@ -445,23 +473,24 @@ class InterfazPercheros:
                     ubicacion
                 ))
 
+    ###CARGAR_ESTADO_TXT: LEE inventario.txt Y ENVÍA SU CONTENIDO JSON AL SERVIDOR PARA ACTUALIZARLO
     def cargar_estado_txt(self):
-        # Abre una ventana para buscar el archivo 
+        ###CARGAR_ESTADO_TXT: abre el diálogo para seleccionar inventario.txt
         ruta_archivo = filedialog.askopenfilename(
             title="Seleccionar archivo de estado",
             filetypes=[("Archivos de texto", "*.txt")]
         )
 
-        # Si se cierra la ventana sin seleccionar
+        ###CARGAR_ESTADO_TXT: no hace nada si el usuario no selecciona archivo
         if not ruta_archivo:
             return 
 
-        # Validación del nombre obligatorio
+        ###CARGAR_ESTADO_TXT: EXIGE QUE EL ARCHIVO SE LLAME INVENTARIO.TXT
         if os.path.basename(ruta_archivo) != "inventario.txt":
             messagebox.showwarning("Archivo Inválido", "Por requerimiento, el archivo debe llamarse estrictamente 'inventario.txt'")
             return
 
-        # Intentar leer el archivo y verificar que el formato sea correcto
+        
         try:
             with open(ruta_archivo, 'r', encoding='utf-8') as file:
                 datos_nuevos = json.load(file)
@@ -472,10 +501,10 @@ class InterfazPercheros:
             messagebox.showerror("Error de Lectura", f"No se pudo leer el archivo.\n{e}")
             return
 
-        # Enviar los datos validados al servidor Flask
+        ###CARGAR_ESTADO_TXT: ENVÍA INVENTARIO CARGADO AL FLASK
         url = f"{self.url_pagina}/sobrescribir_inventario"
         try:
-            # Enviamos como JSON puro en lugar de form-data
+            
             respuesta = requests.post(url, json={"nuevo_inventario": datos_nuevos})
             
             if respuesta.status_code == 200:
@@ -490,41 +519,112 @@ class InterfazPercheros:
         except requests.exceptions.RequestException as e:
             messagebox.showerror("Error de Conexión", f"No se pudo conectar con el servidor.\nDetalle: {e}")
 
+
+
+    ###GENERAR_INFORME: CREA informe.txt CON UN RESUMEN DEL INVENTARIO Y EL HISTORIAL DE EXTRAÍDAS
+    def generar_informe(self, inventario):
+        
+        import os
+        directorio_actual = os.path.dirname(os.path.abspath(__file__))
+        ruta_informe = os.path.join(directorio_actual, "informe.txt")
+
+        total_prendas = len(inventario)
+        colgadas = sum(1 for p in inventario if p.get("estado") == "colgada")
+        extraidas = sum(1 for p in inventario if p.get("estado") == "extraida")
+
+        lineas = []
+        lineas.append("=======================================================================")
+        lineas.append("             INFORME DETALLADO DEL SISTEMA DE PERCHEROS               ")
+        lineas.append("=======================================================================\n")
+
+        lineas.append("RESUMEN DE CAPACIDAD GENERAL:")
+        lineas.append(f"  - Total de prendas registradas en historial: {total_prendas}")
+        lineas.append(f"  - Prendas físicamente en los percheros (Colgadas): {colgadas} / 15")
+        lineas.append(f"  - Prendas fuera del sistema: {extraidas}\n")
+
+        lineas.append("-----------------------------------------------------------------------")
+        lineas.append("DISTRIBUCIÓN FÍSICA POR PERCHERO")
+        lineas.append("-----------------------------------------------------------------------")
+
+        for perchero_num in ["1", "2", "3"]:
+            lineas.append(f"\n▶ PERCHERO {perchero_num}:")
+            prendas_perchero = {str(p["posicion"]): p for p in inventario if str(p.get("perchero")) == perchero_num and p.get("estado") == "colgada"}
+            
+            for pos in range(1, 6):
+                pos_str = str(pos)
+                if pos_str in prendas_perchero:
+                    p = prendas_perchero[pos_str]
+                    lineas.append(f"  [Posición {pos}]: OCUPADO")
+                    lineas.append(f"    - Nombre: {p['nombre']}")
+                    lineas.append(f"    - Tipo:   {p['tipo']}")
+                    lineas.append(f"    - Color:  {p['color']}")
+                    lineas.append(f"    - Tela:   {p['tela']}")
+                    lineas.append(f"    - Talla:  {p['talla']}")
+                    lineas.append(f"    - Fit:    {p['fit']}")
+                else:
+                    lineas.append(f"  [Posición {pos}]: VACÍO")
+
+        lineas.append("\n-----------------------------------------------------------------------")
+        lineas.append("HISTORIAL DE PRENDAS EXTRAÍDAS (FUERA DE PERCHERO)")
+        lineas.append("-----------------------------------------------------------------------")
+
+        prendas_extraidas = [p for p in inventario if p.get("estado") == "extraida"]
+        if prendas_extraidas:
+            for i, p in enumerate(prendas_extraidas, 1):
+                lineas.append(f"\n  {i}. Código/Nombre: {p['nombre']}")
+                lineas.append(f"     - Tipo: {p['tipo']} | Color: {p['color']} | Tela: {p['tela']} | Talla: {p['talla']} | Fit: {p['fit']}")
+        else:
+            lineas.append("\n  No hay prendas en el historial de extracción.")
+
+        lineas.append("\n=======================================================================")
+        lineas.append("               FIN DEL INFORME         ")
+        lineas.append("=======================================================================")
+
+        try:
+            with open(ruta_informe, "w", encoding="utf-8") as file:
+                file.write("\n".join(lineas))
+            print("[INFO] informe.txt generado/actualizado exitosamente.")
+        except Exception as e:
+            print(f"[ERROR] No se pudo escribir el informe: {e}")
+
+
+    ###VISTA_DIAGRAMA: OBTIENE EL ESTADO ACTUAL DEL SERVIDOR Y GENERA EL DIAGRAMA FÍSICO DEL PERCHERO
     def vista_diagrama(self):
         for vista in self.ventana.winfo_children():
             vista.destroy()
 
         tk.Label(self.ventana, text="Estado Actual de los Percheros", font=("Arial", 16, "bold")).pack(pady=10)
 
-        # Contenedor principal para la matriz física
         cuadricula = tk.Frame(self.ventana)
         cuadricula.pack(pady=10)
 
-        # 1. Dibujar los encabezados de las columnas (Percheros)
         for p in range(1, 4):
             tk.Label(cuadricula, text=f"Perchero {p}", font=("Arial", 11, "bold"), fg="#333333").grid(row=0, column=p, padx=15, pady=5)
 
-        # 2. Dibujar los indicadores de las filas (Posiciones)
         for pos in range(1, 6):
             tk.Label(cuadricula, text=f"Pos {pos}", font=("Arial", 9, "italic"), fg="#666666").grid(row=pos, column=0, padx=10, pady=10)
 
-        # 3. Solicitar el inventario actualizado al servidor Flask
+        ###VISTA_DIAGRAMA: SOLICITA INVENTARIO
         inventario_completo = []
         try:
             respuesta = requests.get(f"{self.url_pagina}/obtener_inventario")
             if respuesta.status_code == 200:
                 inventario_completo = respuesta.json().get("inventario", [])
+                
+                
+                self.generar_informe(inventario_completo)
+                
         except requests.exceptions.RequestException:
             messagebox.showerror("Error", "No se pudo conectar al servidor para obtener el estado actual.")
 
-        # 4. Mapear las prendas colgadas
+       
         mapa_fisico = {}
         for prenda in inventario_completo:
             if prenda.get("estado") == "colgada":
                 coordenada = (int(prenda["perchero"]), int(prenda["posicion"]))
                 mapa_fisico[coordenada] = prenda
 
-        # Nombres de los archivos PNG que debes tener en tu carpeta (tamaño recomendado: 50x50 px)
+        ###BUSCA LOS ÍCONOS PARA EL DIAGRAMA DE ESTADOS EN LA CARPETA DEL PROYECTO 
         archivos_ropa = {
             "T-Shirt": "tshirt.png",
             "Pantalón": "pantalon.png",
@@ -533,11 +633,11 @@ class InterfazPercheros:
             "Enagua": "enagua.png"
         }
 
-        # Diccionario vital para evitar que Python borre las imágenes de la memoria (Garbage Collector)
+        ###VISTA_DIAGRAMA: CONSERVA IMÁGENES CARGARDAS PARA EVITAR QUE GC LAS BORRE
         if not hasattr(self, 'imagenes_cargadas'):
             self.imagenes_cargadas = {}
 
-        # 5. Renderizar dinámicamente cada celda del perchero
+        #
         import os
         directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
@@ -545,10 +645,10 @@ class InterfazPercheros:
             for p in range(1, 4):
                 prenda_en_sitio = mapa_fisico.get((p, pos))
                 
-                # Crear una celda de tamaño fijo para que la cuadrícula no se deforme
+                
                 celda = tk.Frame(cuadricula, width=110, height=85, bd=2)
                 celda.grid(row=pos, column=p, padx=6, pady=6)
-                celda.grid_propagate(False) # Obliga al Frame a mantener su tamaño ignorando el contenido
+                celda.grid_propagate(False) 
                 
                 if prenda_en_sitio:
                     celda.config(bg="#D4EDDA", relief="raised")
@@ -556,7 +656,6 @@ class InterfazPercheros:
                     nombre_archivo = archivos_ropa.get(tipo, "default.png")
                     ruta_img = os.path.join(directorio_actual, nombre_archivo)
                     
-                    # Intentar cargar y mostrar la imagen
                     try:
                         if tipo not in self.imagenes_cargadas:
                             self.imagenes_cargadas[tipo] = tk.PhotoImage(file=ruta_img)
@@ -565,20 +664,19 @@ class InterfazPercheros:
                         lbl_img = tk.Label(celda, image=img, bg="#D4EDDA")
                         lbl_img.pack(pady=(2, 0))
                     except Exception as e:
-                        # Si no encuentra la imagen o no es PNG, la omitimos sin que el programa se caiga
+                        
                         print(f"[ADVERTENCIA] No se pudo cargar la imagen {nombre_archivo}: {e}")
 
-                    # Texto de la prenda debajo de la imagen
+                    texto_celda = f"{prenda_en_sitio['nombre'][:12]}\n[{prenda_en_sitio['color']}]"
                     texto_celda = f"{prenda_en_sitio['nombre'][:12]}\n[{prenda_en_sitio['color']}]"
                     tk.Label(celda, text=texto_celda, bg="#D4EDDA", fg="#155724", font=("Arial", 8, "bold")).pack()
 
                 else:
-                    # Celda Vacía
                     celda.config(bg="#E2E3E5", relief="sunken")
                     tk.Label(celda, text="Vacío", bg="#E2E3E5", fg="#6C757D", font=("Arial", 9)).pack(expand=True)
 
-        # Botón inferior para regresar
         tk.Button(self.ventana, text="Volver al Menú Principal", command=self.crear_menu, font=("Arial", 11)).pack(pady=15)
+
 if __name__ == "__main__":
     ventana = tk.Tk()
     app = InterfazPercheros(ventana)
